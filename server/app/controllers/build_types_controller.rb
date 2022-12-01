@@ -1,0 +1,2 @@
+class BuildTypesController < ApplicationController
+end

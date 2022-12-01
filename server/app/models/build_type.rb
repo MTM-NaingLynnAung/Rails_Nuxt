@@ -1,0 +1,2 @@
+class BuildType < ApplicationRecord
+end
