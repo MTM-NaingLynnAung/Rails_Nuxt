@@ -9,9 +9,13 @@
       <div class="form-group">
         <label>Password</label>
         <input type="password" class="form-control" v-model="user.password">
+        <div v-if="errorMessage">
+            <span class="text-danger" >{{ errors }}</span>
+          </div>
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
+    {{ this.$auth.loggedIn }}
   </div>
 </template>
 
@@ -29,16 +33,20 @@ export default {
     }
   },
   methods: {
-    list() {
-      this.$axios.get('/users')
-      .then( response => {
-        console.log(response.data)
+    async login(){
+    
+      this.$auth.loginWith('local',{ data: this.user })
+      .then(response => {
+        this.$router.push('/')
+        this.errorMessage  = false
       })
-    }
+      .catch(e => {
+        console.log(e)
+        this.errorMessage = true
+      })
+      
+    },
 
-  },
-  mounted(){
-    this.list()
   }
 }
 </script>

@@ -1,22 +1,39 @@
 class UsersController < ApplicationController
-  before_action :set_user
+  # before_action :set_user
   def index
     @users = User.all
     render json: @users
   end
 
   def show
+    @user = User.find_by(id: params[:id])
     render json: @user
   end
 
   def create
     @user = User.create(user_params)
     if @user.save
-      session[:user_id] = @user.id
-      render json: @user, status: :created
+      token = encode({ user_id: @user.id })
+      render json: { user: @user, token: token }, status: :created
     else
       render json: @user.errors, status: :unprocessable_entity
     end
+  end
+  
+  def login
+    
+    @user = User.find_by(email: params[:email])
+    if @user && @user.authenticate(params[:password])
+      token = encode({user_id: @user.id})
+      render json: { user: @user, token: token }
+    else
+      render json: { error: "Email or Password incorrect" }, status: :unprocessable_entity
+    end
+   
+  end
+
+  def current
+    render json: @user
   end
 
   def update
@@ -37,8 +54,9 @@ class UsersController < ApplicationController
   end
 
   private
+
     def set_user
-      @user = User.find_by(id: params[:id])
+      @user ||= User.find_by(id: params[:id])
     end
     def user_params
       params.permit(:name, :email, :password, :password_confirmation)
