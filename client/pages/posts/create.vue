@@ -9,10 +9,18 @@
         </div>
         <div class="row">
           <div class="col-6">
-            <label for="">Manufactures/Model (Optional)</label>
-            <select class="form-control">
-              <option>--Select--</option>
+            <label for="">Manufactures (Optional)</label>
+            <select class="form-control" v-model="post.manufacture_id">
+              <option selected :value="null">--Select--</option>
+              <option  v-for="model in manufacture" :key="model.id" selected>{{ model.name }}</option>
             </select>
+            <div class="form-group mt-3" v-show="post.manufacture_id">
+              <label for="">Models </label>
+               <select class="form-control" v-model="post.car_model_id">
+                <option selected :value="null">--Select--</option>
+                <option  v-for="model in manufacture.car_model" :key="model.id" selected>{{ model.name }}</option>
+              </select>
+            </div>
           </div>
           <div class="col-6 mb-3">
             <label for="">Buid Type (Optional)</label>
@@ -118,6 +126,43 @@
 </template>
 <script>
 export default {
-  
+  data(){
+    return {
+      post: {
+        condition: '',
+        trim_name: '',
+        engine_power: '',
+        steering_position: '',
+        fuel_type: '',
+        color: '',
+        price: '',
+        vin: '',
+        plate_number: '',
+        seat: '',
+        door: '',
+        description: '',
+        year: '',
+        phone: '',
+        address: '',
+        manufacture_id: null,
+        user_id: '',
+        car_model_id: null,
+        build_type_id: '',
+      },
+      manufacture: [],
+      build_type: [],
+      model: []
+    }
+  },
+  mounted() {
+    this.$axios.get('/posts/create')
+    .then(response => {
+      this.manufacture = response.data.manufacture
+      this.build_type = response.data.build_type
+      this.manufacture.forEach(element => {
+        console.log(element.car_models)
+      });
+    })
+  }
 }
 </script>

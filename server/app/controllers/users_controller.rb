@@ -1,5 +1,5 @@
 class UsersController < ApplicationController
-  # before_action :set_user
+  before_action :authorized, except: [:login, :create, :logout]
   def index
     @users = User.all
     render json: @users
@@ -13,9 +13,9 @@ class UsersController < ApplicationController
   def create
     @user = User.create(user_params)
     if @user.save
-      token = encode({ user_id: @user.id })
+      token = encode_token({ user_id: @user.id })
       render json: { user: @user, token: token }, status: :created
-    else
+    else  
       render json: @user.errors, status: :unprocessable_entity
     end
   end
@@ -24,15 +24,19 @@ class UsersController < ApplicationController
     
     @user = User.find_by(email: params[:email])
     if @user && @user.authenticate(params[:password])
-      token = encode({user_id: @user.id})
-      render json: { user: @user, token: token }
+      token = encode_token({user_id: @user.id})
+      render json: { data: { user: @user, token: token } }
     else
       render json: { error: "Email or Password incorrect" }, status: :unprocessable_entity
     end
    
   end
 
-  def current
+  def auto_login
+    render json: @user
+  end
+
+  def edit
     render json: @user
   end
 
@@ -53,12 +57,16 @@ class UsersController < ApplicationController
     end
   end
 
+  def logout
+    render json: { message: 'User was successfully logged out' }
+  end
+
   private
 
     def set_user
       @user ||= User.find_by(id: params[:id])
     end
     def user_params
-      params.permit(:name, :email, :password, :password_confirmation)
+      params.permit(:name, :email, :password, :password_confirmation, :phone, :address)
     end
 end

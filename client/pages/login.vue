@@ -15,7 +15,6 @@
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    {{ this.$auth.loggedIn }}
   </div>
 </template>
 
@@ -35,13 +34,22 @@ export default {
   methods: {
     async login(){
     
-      this.$auth.loginWith('local',{ data: this.user })
+      await this.$auth.loginWith('local', { data: this.user })
       .then(response => {
+        this.$notify({
+          title: 'Success',
+          text: 'Login successful'
+        });
         this.$router.push('/')
-        this.errorMessage  = false
+        this.errorMessage = false
       })
-      .catch(e => {
-        console.log(e)
+      .catch(error => {
+        this.$notify({
+          title: 'Fail',
+          text: 'Something went wrong. Please try again',
+          type: 'error'
+        });
+        this.errors = error.response.data.error
         this.errorMessage = true
       })
       

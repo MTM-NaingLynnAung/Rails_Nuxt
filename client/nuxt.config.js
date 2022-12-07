@@ -13,15 +13,20 @@ export default {
     ],
     link: [
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
+    ],
+    script: [
+      { src: "https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" },
+      { src: "https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" },
+      { src: "https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" }
     ]
   },
-
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
+    { src: '~/plugins/vue-notification.js', ssr: false }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -35,14 +40,19 @@ export default {
   modules: [
     // https://go.nuxtjs.dev/bootstrap
     'bootstrap-vue/nuxt',
-    '@nuxtjs/auth-next',
     // https://go.nuxtjs.dev/axios
-    '@nuxtjs/axios',
+    {  src: '@nuxtjs/axios', mode: 'client' },
+    { src: '@nuxtjs/auth-next', mode: 'client' }
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: 'http://localhost:8080'
+    baseURL: 'http://localhost:8080',
+    headers: {
+      common: {
+        Accept: 'application/json, text/plain, */*'
+      }
+    }
   },
 
   auth: {
@@ -52,15 +62,18 @@ export default {
     strategies: {
       local:{
         token: {
-          property: 'token',
-          global: true
+          property: 'data.token',
+          maxAge: 18000,
+          global: true,
+          name: 'Authorization',
+          type: 'Bearer'
         },
         user: {
-          property: 'user', // <--- Default "user"
+          property: false,
           autoFetch: true
         },
         endpoints: {
-          login: {url: '/login', method: 'post'},
+          login: {url: '/login', method: 'post' },
           logout: {url: '/logout', method: 'post'},
           user: {url: '/user', method: 'get' },
 
