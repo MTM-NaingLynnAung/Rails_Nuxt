@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_07_090419) do
+ActiveRecord::Schema.define(version: 2022_12_08_031114) do
 
   create_table "build_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
@@ -37,6 +37,7 @@ ActiveRecord::Schema.define(version: 2022_12_07_090419) do
     t.string "trim_name"
     t.string "engine_power"
     t.string "steering_position"
+    t.string "transmission"
     t.string "fuel_type"
     t.string "color"
     t.string "price"
