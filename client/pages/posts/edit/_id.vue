@@ -1,17 +1,13 @@
 <template>
   <div class="container mt-5">
     <div class="col-8 m-auto border p-4">
-      <h3>Create Post</h3>
-      <form @submit.prevent="store">
+      <h3>Update Post</h3>
+      <form @submit.prevent="update">
+        <div class="mb-3">
+          <label for="">Add Image</label>
+          <input type="file" class="form-control col-5">
+        </div>
         <div class="row">
-          <div class="col-6 my-3" style="height:180px">
-            <b-img v-if="imageUrl" :src="imageUrl" fluid alt="Responsive image" class="w-100 h-100"></b-img>
-            <b-img v-else src="~/assets/default.png" fluid alt="Responsive image" class="w-100 h-100"></b-img>
-          </div>
-          <div class="col-6 mt-3">
-            <label for="">Add Image</label>
-            <b-form-file v-model="post.image" class="mt-3 form-control" plain @change="imagePreview"></b-form-file>
-          </div>
           <div class="col-6">
             <label for="">Manufactures (Optional)</label>
             <select class="form-control" v-model="post.manufacture_id">
@@ -165,8 +161,8 @@
           </div>
         </div>
         <div class="d-flex justify-content-between">
-          <NuxtLink to="/" class="btn btn-outline-dark">Back</NuxtLink>
-          <button class="btn btn-primary">Save</button>
+          <NuxtLink :to="`/posts/detail/${post_id}`" class="btn btn-outline-dark">Back</NuxtLink>
+          <button class="btn btn-primary">Update</button>
         </div>
       </form>
     </div>
@@ -198,26 +194,23 @@ export default {
         user_id: this.$auth.user.id,
         car_model_id: null,
         build_type_id: null,
-        image: []
       },
       manufacture: [],
       build_type: [],
       car_model: [],
       errors: [],
       errorMessage: false,
-      imageUrl: null,
+      post_id: this.$route.params.id
     }
   },
   methods: {
-    store(){
-      let formData = new FormData(form)
-      formData.append('image', this.image)
-      this.$axios.post('/posts', formData)
+    update(){
+      this.$axios.put(`/posts/${this.post_id}`, this.post)
       .then(response => {
-        this.$router.push('/')
+        this.$router.push(`/posts/detail/${this.post_id}`)
         this.$notify({
           title: 'Success',
-          text: 'Post created successfully'
+          text: 'Post updated successfully'
         })
         this.errorMessage = false
       })
@@ -230,15 +223,12 @@ export default {
           type: 'error'
         })
        })
-    },
-    imagePreview(e) {
-      let file = e.target.files[0]
-      this.imageUrl = URL.createObjectURL(file)
     }
   },
   mounted() {
-    this.$axios.get('/posts/create')
+    this.$axios.get(`/posts/edit/${this.post_id}`)
     .then(response => {
+      this.post = response.data.post
       this.manufacture = response.data.manufacture
       this.build_type = response.data.build_type
       this.car_model = response.data.model

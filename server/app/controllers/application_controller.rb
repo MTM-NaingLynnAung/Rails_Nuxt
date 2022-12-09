@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  include Pagy::Backend
   before_action :authorized
 
   def encode_token(payload)

@@ -8,4 +8,5 @@ Rails.application.routes.draw do
   root to: 'users#index'
   get '/user', to: 'users#auto_login'
   get '/profile', to: 'users#edit'
+  get '/posts/edit/:id', to: 'posts#edit'
 end

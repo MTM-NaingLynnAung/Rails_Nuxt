@@ -1,32 +1,31 @@
 <template>
 <div>
   <div class="jumbotron jumbotron-fluid mb-0">
-    <div class="container">
-      <h1 class="display-4">Fluid jumbotron</h1>
-      <p class="lead">This is a modified jumbotron that occupies the entire horizontal space of its parent.</p>
+    <div class="container" style="height:160px">
+      
     </div>
   </div>
   <div style="margin-top: -20px;">
-    <div class="col-4 d-flex justify-content-center m-auto">
-      <input type="search" class="form-control mr-3">
+    <form class="col-4 d-flex justify-content-center m-auto" @submit.prevent="postLists(currentPage)">
+      <input type="search" class="form-control mr-3" v-model="search" placeholder="Find with model" style="height:45px">
       <button class="btn btn-primary">Search</button>
-    </div>
+    </form>
   </div>
   <div class="container">
     <h3 class="text-center my-5">Latest Post</h3>
     <div class="row">
       <div v-for="post in posts" :key="post.id" class="col-4 mb-4">
-        <div class="card">
-          <img src="~/assets/default.png" class="card-img-top" alt="...">
+        <div class="card" @click="detail(post.id)">
+          <img src="~/assets/car.jpg" class="card-img-top" alt="...">
           <div class="card-body">
-            <NuxtLink :to="`/posts/detail/${post.id}`"><h5 class="card-title">{{ post.manufacture }} ( {{ post.car_model }} ) </h5></NuxtLink>
+            <NuxtLink :to="`/posts/detail/${post.id}`" class="nuxt-link"><h5 class="card-title">{{ post.manufacture }} ( {{ post.car_model }} ) </h5></NuxtLink>
             <div v-if="post.price">
               <h4 class="text-success"> {{ post.price }} Lakhs </h4>
             </div>
             <div v-else>
               <h4 class="text-success">Negotiate</h4>
             </div>
-            <div class="row bg-light">
+            <div class="row bg-light mt-3">
               <div class="col-6">
                 <span><font-awesome-icon icon="gas-pump" /></span>
                 <span class="card-text">{{ post.fuel_type }}</span>
@@ -49,7 +48,22 @@
         </div>
       </div>
     </div>
+    <div class="d-flex justify-content-center">
+      <img src="~/assets/not_found.jpg" alt="No Post Here" v-if="!posts.length && search.length" style="width:50%">
+    </div>
   </div>
+   <b-pagination
+   v-show="rows > perPage"
+      v-model="currentPage"
+      :total-rows="rows"
+      :per-page="perPage"
+      prev-text="« Previous"
+      next-text="Next »"
+      :hide-goto-end-buttons="true"
+      limit="1"
+      align="center"
+      @input="postLists(currentPage)"
+    ></b-pagination>
 </div>
 </template>
 
@@ -59,18 +73,53 @@ export default {
   middleware: 'auth',
   data() {
     return {
-      posts: []
+      posts: [],
+      search: "",
+      currentPage: 1,
+      rows: null,
+      perPage: null,
     }
     
   },
   methods: {
-      
+    postLists(page = 1){
+      this.$axios.get(`/posts/?page=${page}&search=${this.search}`)
+        .then(response => {
+          this.rows = response.data.pagy.count
+          this.currentPage = response.data.pagy.page
+          this.perPage = response.data.pagy.items
+          this.posts = response.data.posts
+        })
+    },
+    detail(id){
+      this.$router.push(`posts/detail/${id}`)
+    },
+    
   },
   mounted() {
-    this.$axios.get('/posts')
-    .then(response => {
-      this.posts = response.data
-    })
+    this.postLists()
   }
 }
 </script>
+<style>
+  .card:hover{
+    cursor: pointer;
+  }
+  .nuxt-link:hover {
+    text-decoration: none;
+    color: #008A63;
+  }
+  .nuxt-link {
+    color: #000;
+  }
+  .jumbotron {
+    background-image: url('~/assets/lam.jpg');
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+  }
+  .page-item:nth-child(2) {
+    display: none;
+  }
+
+</style>

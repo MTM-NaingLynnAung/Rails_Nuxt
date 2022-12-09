@@ -3,6 +3,7 @@ class Post < ApplicationRecord
   belongs_to :build_type
   belongs_to :car_model
   belongs_to :manufacture
+  has_many :images, :as => :imageable
   validates :condition, presence: true
   validates :steering_position, presence: true
   validates :transmission, presence: true

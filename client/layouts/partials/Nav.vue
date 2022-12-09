@@ -6,11 +6,11 @@
         <div v-if="$auth.loggedIn == true" class="d-flex">
           
             <li class="nav-item dropdown list-unstyled">
-              <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ $auth.user.email }}</a>
+              <a class="nav-link dropdown-toggle text-dark" data-toggle="dropdown" href="#" role="button" aria-expanded="false">{{ $auth.user.email }}</a>
               <div class="dropdown-menu">
-                <NuxtLink to="/profile" class="dropdown-item">Profile</NuxtLink>
-                <NuxtLink to="/posts/create" class="dropdown-item">Create Post</NuxtLink>
-                <a class="dropdown-item" @click="logout" href="#">Logout</a>
+                <NuxtLink to="/profile" class="dropdown-item"><font-awesome-icon icon="circle-user" class="mr-2 text-primary font-awesome" /> Profile</NuxtLink>
+                <NuxtLink to="/posts/create" class="dropdown-item"><font-awesome-icon icon="circle-plus" class="mr-2 text-primary font-awesome" /> Create Post</NuxtLink>
+                <a class="dropdown-item" @click="logout" href="#"><font-awesome-icon icon="reply" class="mr-2 text-danger" /> Logout</a>
               </div>
             </li>
 
@@ -33,7 +33,6 @@ export default {
     async logout(){
       await this.$auth.logout();
       this.$notify({
-          group: 'auth',
           title: 'Success',
           text: 'Logout successful',
         });
@@ -43,3 +42,8 @@ export default {
 
 }
 </script>
+<style>
+  .dropdown-item:active .font-awesome {
+    color: #fff !important;
+  }
+</style>

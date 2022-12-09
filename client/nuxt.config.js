@@ -39,7 +39,7 @@ export default {
       {
         icons: {
           solid: true,
-          regular: [],
+          regular: true,
           light: [],
           duotone: [],
           brands: []
