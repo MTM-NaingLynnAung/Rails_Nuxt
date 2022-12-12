@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2022_12_09_094102) do
+ActiveRecord::Schema.define(version: 2022_12_12_043952) do
 
   create_table "build_types", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "name"
@@ -28,11 +28,11 @@ ActiveRecord::Schema.define(version: 2022_12_09_094102) do
 
   create_table "images", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.string "src"
-    t.bigint "imageable_id"
     t.string "imageable_type"
+    t.bigint "imageable_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
-    t.index ["imageable_type", "imageable_id"], name: "index_images_on_imageable_type_and_imageable_id"
+    t.index ["imageable_type", "imageable_id"], name: "index_images_on_imageable"
   end
 
   create_table "manufactures", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 2022_12_09_094102) do
     t.string "engine_power"
     t.string "steering_position"
     t.string "transmission"
+    t.bigint "mileage"
     t.string "fuel_type"
     t.string "color"
     t.string "price"

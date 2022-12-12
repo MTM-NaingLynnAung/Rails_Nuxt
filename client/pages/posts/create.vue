@@ -7,12 +7,15 @@
           <div class="col-6 my-3" style="height:180px">
             <b-img v-if="imageUrl" :src="imageUrl" fluid alt="Responsive image" class="w-100 h-100"></b-img>
             <b-img v-else src="~/assets/default.png" fluid alt="Responsive image" class="w-100 h-100"></b-img>
+            <div v-if="errorMessage">
+              <span class="text-danger" v-for="error in errors.images" :key="error"> Image {{ error }}</span>
+            </div>
           </div>
           <div class="col-6 mt-3">
             <label for="">Add Image</label>
-            <b-form-file v-model="post.image" class="mt-3 form-control" plain @change="imagePreview"></b-form-file>
+            <b-form-file v-model="post.images" class="mt-3 form-control" plain @change="imagePreview"></b-form-file>
           </div>
-          <div class="col-6">
+          <div class="col-6 mt-3">
             <label for="">Manufactures (Optional)</label>
             <select class="form-control" v-model="post.manufacture_id">
               <option selected :value="null">--Select--</option>
@@ -26,7 +29,7 @@
               </select>
             </div>
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-6 my-3">
             <label for="">Buid Type (Optional)</label>
             <select class="form-control" v-model="post.build_type_id">
               <option selected :value="null">--Select--</option>
@@ -38,8 +41,11 @@
             <input type="text" class="form-control" v-model="post.trim_name" placeholder="Trim Name">
           </div>
           <div class="col-6 mb-3">
-            <label for="">Engine Power (Optional)</label>
+            <label for="">Engine Power</label>
             <input type="text" class="form-control" v-model="post.engine_power" placeholder="Engine Power">
+            <div v-if="errorMessage">
+              <span class="text-danger" v-for="error in errors.engine_power" :key="error"> Engine Power {{ error }}</span>
+            </div>
           </div>
           <div class="col-12 mb-3">
             <label for="" class="d-block">Car Condition</label>
@@ -55,10 +61,14 @@
               <span class="text-danger" v-for="error in errors.condition" :key="error"> Condition {{ error }}</span>
             </div>
           </div>
+          <div class="col-12 mb-3" v-show="post.condition == 'Used'">
+            <label for="">Mileage (Optional)</label>
+            <input type="number" v-model="post.mileage" placeholder="0" class="form-control col-6">
+          </div>
           <div class="col-6">
             <label for="">Steering Position</label>
             <select class="form-control" v-model="post.steering_position">
-              <option :value="null" selected>--Select--</option>
+              <option value="" selected>--Select--</option>
               <option>Left</option>
               <option>Right</option>
             </select>
@@ -69,7 +79,7 @@
           <div class="col-6 mb-3">
             <label for="">Transmissions</label>
             <select class="form-control" v-model="post.transmission">
-              <option selected :value="null">--Select--</option>
+              <option selected value="">--Select--</option>
               <option value="auto">Auto</option>
               <option value="manual">Manual</option>
               <option value="semi-auto">Semi Auto</option>
@@ -81,7 +91,7 @@
           <div class="col-6">
             <label for="">Fuel Type (Optional)</label>
             <select class="form-control" v-model="post.fuel_type">
-              <option selected :value="null">--Select--</option>
+              <option selected value="">--Select--</option>
               <option>Petrol</option>
               <option>CNG</option>
               <option>Diesel</option>
@@ -91,7 +101,7 @@
           <div class="col-6 mb-3">
             <label for="">Manufacturer Year</label>
             <select class="form-control" v-model="post.year">
-              <option selected :value="null">--Select--</option>
+              <option selected value="">--Select--</option>
               <option value="2022">2022</option>
               <option value="2021">2021</option>
               <option value="2020">2020</option>
@@ -101,7 +111,7 @@
               <span class="text-danger" v-for="error in errors.year" :key="error"> Manufacture Year {{ error }}</span>
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-6 mb-3">
             <label for="">Price</label>
             <input type="text" class="form-control" v-model="post.price" :disabled="post.negotiate == true" placeholder="0">
           </div>
@@ -109,10 +119,10 @@
             <label for="" class="d-block">Negotiate</label>
             <input type="checkbox" value="true" v-model="post.negotiate">
           </div>
-          <div class="col-6">
+          <div class="col-6 mb-3">
             <label for="">Color</label>
             <select class="form-control" v-model="post.color">
-              <option :value="null" selected>--Select--</option>
+              <option value="" selected>--Select--</option>
               <option value="Black">Black</option>
               <option value="Blue">Blue</option>
               <option value="White">White</option>
@@ -127,7 +137,7 @@
             <label for="">Vehicle Identification Number (Optional)</label>
             <input type="text" class="form-control" v-model="post.vin" placeholder="Vehicle Identification Number">
           </div>
-          <div class="col-6">
+          <div class="col-6 mb-3">
             <label for="">Plate Number</label>
             <input type="text" placeholder="1Z/1111" class="form-control" v-model="post.plate_number">
             <div v-if="errorMessage">
@@ -180,25 +190,26 @@ export default {
         condition: '',
         trim_name: '',
         engine_power: '',
-        steering_position: null,
-        transmission: null,
+        steering_position: '',
+        transmission: '',
+        mileage: '',
         negotiate: '',
-        fuel_type: null,
-        color: null,
+        fuel_type: '',
+        color: '',
         price: '',
         vin: '',
         plate_number: '',
         seat: '',
         door: '',
         description: '',
-        year: null,
+        year: '',
         phone: '',
         address: '',
         manufacture_id: null,
         user_id: this.$auth.user.id,
         car_model_id: null,
         build_type_id: null,
-        image: []
+        images: []
       },
       manufacture: [],
       build_type: [],
@@ -210,8 +221,11 @@ export default {
   },
   methods: {
     store(){
-      let formData = new FormData(form)
-      formData.append('image', this.image)
+      let formData = new FormData()
+      for (let [key, value] of Object.entries(this.post)) {
+        formData.append(key, value)
+      }
+      
       this.$axios.post('/posts', formData)
       .then(response => {
         this.$router.push('/')
@@ -222,6 +236,7 @@ export default {
         this.errorMessage = false
       })
       .catch(error => {
+        console.log(error.response.data)
         this.errorMessage = true
         this.errors = error.response.data
         this.$notify({

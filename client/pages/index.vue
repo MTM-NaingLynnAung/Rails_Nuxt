@@ -16,7 +16,9 @@
     <div class="row">
       <div v-for="post in posts" :key="post.id" class="col-4 mb-4">
         <div class="card" @click="detail(post.id)">
-          <img src="~/assets/car.jpg" class="card-img-top" alt="...">
+          <div v-for="image in post.images" :key="image.id">
+            <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top">
+          </div>
           <div class="card-body">
             <NuxtLink :to="`/posts/detail/${post.id}`" class="nuxt-link"><h5 class="card-title">{{ post.manufacture }} ( {{ post.car_model }} ) </h5></NuxtLink>
             <div v-if="post.price">
@@ -94,6 +96,9 @@ export default {
     detail(id){
       this.$router.push(`posts/detail/${id}`)
     },
+    imageUrl(image){
+      return `http://127.0.0.1:8080${image}`
+    }
     
   },
   mounted() {

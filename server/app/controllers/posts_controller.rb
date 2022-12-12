@@ -25,10 +25,18 @@ class PostsController < ApplicationController
   end
 
   def create
-    byebug
     @post = Post.new(post_params)
-    Image.create(src: params[:image], imageable: @post.id)
+    if @post.manufacture_id == 0
+      @post.manufacture_id = nil
+    end
+    if @post.build_type_id == 0
+      @post.build_type_id = nil
+    end
+    if @post.car_model_id == 0
+      @post.car_model_id = nil
+    end
     if @post.save
+      @post.images.create!(src: params[:images])
       render json: @post, status: :created
     else
       render json: @post.errors, status: :unprocessable_entity
@@ -36,7 +44,7 @@ class PostsController < ApplicationController
   end
 
   def show
-    @posts = Post.where.not(id: @post.id).order('id DESC')
+    @posts = Post.where.not(id: @post.id).order('id DESC').limit(3)
     posts = []
     @posts.each do |post|
       posts << post_resource(post)
@@ -48,11 +56,27 @@ class PostsController < ApplicationController
     @manufacture = Manufacture.all
     @build_type = BuildType.all
     @model = CarModel.all
-    render json: { post: @post, manufacture: @manufacture, build_type: @build_type, model: @model }
+    render json: { post: @post, manufacture: @manufacture, build_type: @build_type, model: @model, image: @post.images }
   end
 
   def update
-    if @post.update(post_params)
+    @post.update(post_params)
+    byebug
+    if @post.manufacture_id == 0
+      @post.manufacture_id = nil
+    end
+    if @post.build_type_id == 0
+      @post.build_type_id = nil
+    end
+    if @post.car_model_id == 0
+      @post.car_model_id = nil
+    end
+    if @post.vaild?
+      image = Post.where(imageable_id: @post.id)
+      image.each do |img|
+        img.destroy
+      end
+      @post.images.create!(src: params[:images])
       render json: @post, status: 200
     else
       render json: @post.errors, status: :unprocessable_entity
@@ -75,21 +99,21 @@ class PostsController < ApplicationController
   end
 
   def post_params
-    params.require(:post).permit(:condition, :trim_name, :engine_power, :transmission, :steering_position, :fuel_type, :color,
-                  :price, :vin, :plate_number, :seat, :door, :description, :year, :phone, :address, :manufacture_id, :user_id, :car_model_id, :build_type_id, :image)
+    params.permit(:condition, :trim_name, :engine_power, :transmission, :steering_position, :fuel_type, :color,
+                  :price, :vin, :plate_number, :seat, :door, :description, :year, :phone, :address, :manufacture_id, :user_id, :car_model_id, :build_type_id, :mileage)
   end
 
   def post_resource(post)
     {
       id: post.id,
       condition: post.condition,
-      manufacture: post.manufacture.name,
-      car_model: post.car_model.name,
+      manufacture: post.manufacture.present? ? post.manufacture.name : '-',
+      car_model: post.car_model.present? ? post.car_model.name : '-',
       price: post.price,
       fuel_type: post.fuel_type,
       transmission: post.transmission,
       user: post.user.name,
-      build_type: post.build_type.name,
+      build_type: post.build_type.present? ? post.build_type.name : '-',
       trim_name: post.trim_name,
       engine_power: post.engine_power,
       steering_position: post.steering_position,
@@ -102,7 +126,8 @@ class PostsController < ApplicationController
       year: post.year,
       phone: post.phone,
       address: post.address,
-      created_at: post.created_at.strftime('%B %d, %Y')
+      created_at: post.created_at.strftime('%B %d, %Y'),
+      images: post.images
     }
   end
 end
