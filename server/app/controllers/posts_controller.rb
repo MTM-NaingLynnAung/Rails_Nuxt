@@ -25,6 +25,7 @@ class PostsController < ApplicationController
   end
 
   def create
+    
     @post = Post.new(post_params)
     if @post.manufacture_id == 0
       @post.manufacture_id = nil
@@ -35,11 +36,11 @@ class PostsController < ApplicationController
     if @post.car_model_id == 0
       @post.car_model_id = nil
     end
-    if @post.save
-      @post.images.create!(src: params[:images])
+    @image = @post.images.new(src: params[:images])
+    if @post.save && @image.save
       render json: @post, status: :created
     else
-      render json: @post.errors, status: :unprocessable_entity
+      render json: {post_errors: @post.errors, image_errors: @image.errors}, status: :unprocessable_entity
     end
   end
 
@@ -60,26 +61,30 @@ class PostsController < ApplicationController
   end
 
   def update
-    @post.update(post_params)
-    byebug
-    if @post.manufacture_id == 0
-      @post.manufacture_id = nil
+    if params[:manufacture_id] == 'null'
+      params[:manufacture_id] = nil
     end
-    if @post.build_type_id == 0
-      @post.build_type_id = nil
+    if params[:build_type_id] == 'null'
+      params[:build_type_id] = nil
     end
-    if @post.car_model_id == 0
-      @post.car_model_id = nil
+    if params[:car_model_id] == 'null'
+      params[:car_model_id] = nil
     end
-    if @post.vaild?
-      image = Post.where(imageable_id: @post.id)
-      image.each do |img|
-        img.destroy
+    if params[:images].present?
+      @image = @post.images.new(src: params[:images])
+    end
+   
+    if @post.update(post_params)
+      if params[:images].present?
+        image = Image.where(imageable_id: @post.id)
+        image.each do |img|
+          img.destroy
+        end
+        @image = @post.images.create!(src: params[:images])
       end
-      @post.images.create!(src: params[:images])
       render json: @post, status: 200
     else
-      render json: @post.errors, status: :unprocessable_entity
+      render json: {post_errors: @post.errors, image_errors: @image.errors}, status: :unprocessable_entity
     end
   end
 

@@ -11,7 +11,7 @@
     <div class="row mt-5">
       <div class="col-8">
         <div v-for="image in post.images" :key="image.id">
-          <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top" style="width:500px">
+          <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top" style="width:500px;height:350px">
         </div>
       </div>
       <div class="col-4 border p-3">
@@ -145,7 +145,7 @@
         <div v-for="post in posts" :key="post.id" class="col-4 mb-4">
           <div class="card" @click="detail(post.id)">
             <div v-for="image in post.images" :key="image.id">
-              <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top">
+              <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top" style="height:200px;">
             </div>
             <div class="card-body">
               <NuxtLink :to="`/posts/detail/${post.id}`" class="nuxt-link"><h5 class="card-title">{{ post.manufacture }} ( {{ post.car_model }} ) </h5></NuxtLink>
@@ -198,7 +198,6 @@ export default {
   methods: {
     detail(id){
       this.$router.push('/posts/detail/'+id)
-      window.location.reload()
     },
     destroy(id) {
       this.$bvModal.msgBoxConfirm('Are you Sure to Delete.', {

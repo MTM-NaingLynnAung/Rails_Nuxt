@@ -17,7 +17,7 @@
       <div v-for="post in posts" :key="post.id" class="col-4 mb-4">
         <div class="card" @click="detail(post.id)">
           <div v-for="image in post.images" :key="image.id">
-            <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top">
+            <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top" style="height: 200px;">
           </div>
           <div class="card-body">
             <NuxtLink :to="`/posts/detail/${post.id}`" class="nuxt-link"><h5 class="card-title">{{ post.manufacture }} ( {{ post.car_model }} ) </h5></NuxtLink>

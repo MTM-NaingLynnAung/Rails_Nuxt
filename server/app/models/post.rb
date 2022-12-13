@@ -4,8 +4,9 @@ class Post < ApplicationRecord
   belongs_to :build_type
   belongs_to :car_model
   belongs_to :manufacture
-  has_many :images, as: :imageable, dependent: :destroy
+  has_many :images, as: :imageable
   validates_associated :images
+
   validates :engine_power, presence: true, length: { maximum: 10 }
   validates :condition, presence: true
   validates :mileage, length: { maximum: 20 }
@@ -17,6 +18,8 @@ class Post < ApplicationRecord
   validates :vin, length: { maximum: 20 }
   validates :plate_number, presence: true, length: { maximum: 20 }
   validates :description, presence: true
-  validates :phone, presence: true, length: { maximum: 20 }
+  validates :phone, presence: { message: "can't be blank" }, length: { maximum: 20 }, 
+                    format: { with: Constants::VAILD_PHONE_REGEX, message: "format is invalid" }
   validates :address, presence: true, length: { maximum: 255 }
+
 end
