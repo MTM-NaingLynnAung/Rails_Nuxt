@@ -27,7 +27,8 @@
         </div>
         <hr>
         <div class="mb-2">
-          <img src="~/assets/default.png" alt="Profile" width="30px" height="30px" class="rounded-circle">
+          <b-img v-if="post.image" :src="imageUrl(post.image.src.url)" class="rounded-circle" style="width:30px;height:30px;"></b-img>
+          <b-img v-else src="~/assets/default.png" fluid alt="Responsive image" class="rounded-circle" style="width:30px;height:30px;"></b-img>
           <p class="d-inline ml-5">{{ post.user }}</p>
         </div>
         <div class="mb-2" style="height:30px;">
@@ -140,7 +141,7 @@
     </div>
 
     <div>
-      <h3 class="text-center mb-5">Related Post</h3>
+      <h3 class="text-center mb-5" v-if="posts.length">Related Post</h3>
       <div class="row">
         <div v-for="post in posts" :key="post.id" class="col-4 mb-4">
           <div class="card" @click="detail(post.id)">
@@ -170,7 +171,8 @@
               </div>
               <hr>
               <div class="">
-                <img src="~/assets/default.png" alt="Profile" width="40px" height="40px" class="rounded-circle">
+                <b-img v-if="post.image" :src="imageUrl(post.image.src.url)" class="rounded-circle" style="width:40px;height:40px;"></b-img>
+                <b-img v-else src="~/assets/default.png" fluid alt="Responsive image" class="rounded-circle" style="width:40px;height:40px;"></b-img>
                 <p class="d-inline ml-3">{{ post.user }}</p>
               </div>
               
@@ -179,7 +181,7 @@
         </div>
       </div>
     </div>
-    <div class="d-flex justify-content-center mb-5">
+    <div class="d-flex justify-content-center mb-5" v-if="posts.length > 3">
       <NuxtLink to="/" class="btn btn-outline-primary">View More</NuxtLink>
     </div>
 
@@ -202,8 +204,6 @@ export default {
     destroy(id) {
       this.$bvModal.msgBoxConfirm('Are you Sure to Delete.', {
         title: 'Please Confirm',
-        size: 'sm',
-        buttonSize: 'sm',
         okVariant: 'danger',
         okTitle: 'YES',
         cancelTitle: 'NO',
@@ -237,7 +237,7 @@ export default {
   }
 }
 </script>
-<style>
+<style scoped>
   .text-success {
     color: #008A63!important;
   }
@@ -261,4 +261,5 @@ export default {
     padding: 7px 12px;
     background: rgb(254 242 242);
   }
+
 </style>

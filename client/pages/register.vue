@@ -25,7 +25,7 @@
       </div>
       <div class="form-group">
         <label>Confirm Password</label>
-        <input type="c_password" class="form-control" v-model="user.password_confirmation">
+        <input type="password" class="form-control" v-model="user.password_confirmation">
          <div v-if="errorMessage">
             <span class="text-danger" v-for="error in errors.password_confirmation" :key="error"> Password Confirmation {{ error }}</span>
           </div>

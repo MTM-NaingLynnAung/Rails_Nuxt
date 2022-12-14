@@ -8,7 +8,7 @@
             <b-img v-if="imageUrl" :src="imageUrl" fluid alt="Responsive image" class="w-100 h-100"></b-img>
             <b-img v-else src="~/assets/default.png" fluid alt="Responsive image" class="w-100 h-100"></b-img>
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in image_errors.src" :key="error"> {{ error }}</span>
+              <span class="text-danger" v-for="error in errors['images.src']" :key="error"> {{ error }}</span>
             </div>
           </div>
           <div class="col-6 mt-3">
@@ -17,7 +17,7 @@
           </div>
           <div class="col-6 mt-3">
             <label for="">Manufactures (Optional)</label>
-            <select class="form-control" v-model="post.manufacture_id">
+            <select class="form-control" v-model="post.manufacture_id" @change="filterModel">
               <option selected :value="null">--Select--</option>
               <option :value="model.id" v-for="model in manufacture" :key="model.id">{{ model.name }}</option>
             </select>
@@ -25,7 +25,7 @@
               <label for="">Models </label>
                <select class="form-control" v-model="post.car_model_id">
                 <option selected :value="null">--Select--</option>
-                <option :value="model.id" v-for="model in car_model" :key="model.id" selected v-show="model.manufacture_id == post.manufacture_id">{{ model.name }}</option>
+                <option :value="model.id" v-for="model in filter_model" :key="model.id" >{{ model.name }}</option>
               </select>
             </div>
           </div>
@@ -44,7 +44,7 @@
             <label for="">Engine Power</label>
             <input type="text" class="form-control" v-model="post.engine_power" placeholder="Engine Power">
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.engine_power" :key="error"> Engine Power {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.engine_power" :key="error"> Engine Power {{ error }}</span>
             </div>
           </div>
           <div class="col-12 mb-3">
@@ -58,7 +58,7 @@
               <label class="form-check-label" for="inlineRadio2">Brand New</label>
             </div>
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.condition" :key="error"> Condition {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.condition" :key="error"> Condition {{ error }}</span>
             </div>
           </div>
           <div class="col-12 mb-3" v-show="post.condition == 'Used'">
@@ -73,7 +73,7 @@
               <option>Right</option>
             </select>
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.steering_position" :key="error"> Steering Position {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.steering_position" :key="error"> Steering Position {{ error }}</span>
             </div>
           </div>
           <div class="col-6 mb-3">
@@ -85,7 +85,7 @@
               <option value="semi-auto">Semi Auto</option>
             </select>
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.transmission" :key="error"> Transmissions {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.transmission" :key="error"> Transmissions {{ error }}</span>
             </div>
           </div>
           <div class="col-6">
@@ -102,13 +102,10 @@
             <label for="">Manufacturer Year</label>
             <select class="form-control" v-model="post.year">
               <option selected value="">--Select--</option>
-              <option value="2022">2022</option>
-              <option value="2021">2021</option>
-              <option value="2020">2020</option>
-              <option value="2019">2019</option>
+              <option :value="year" v-for="year in years" :key="year">{{ year }}</option>
             </select>
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.year" :key="error"> Manufacture Year {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.year" :key="error"> Manufacture Year {{ error }}</span>
             </div>
           </div>
           <div class="col-6 mb-3">
@@ -123,14 +120,10 @@
             <label for="">Color</label>
             <select class="form-control" v-model="post.color">
               <option value="" selected>--Select--</option>
-              <option value="Black">Black</option>
-              <option value="Blue">Blue</option>
-              <option value="White">White</option>
-              <option value="Red">Red</option>
-              <option value="Green">Green</option>
+              <option :value="color" v-for="color in colors" :key="color">{{ color }}</option>
             </select>
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.color" :key="error"> Color {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.color" :key="error"> Color {{ error }}</span>
             </div>
           </div>
           <div class="col-6 mb-3">
@@ -141,7 +134,7 @@
             <label for="">Plate Number</label>
             <input type="text" placeholder="1Z/1111" class="form-control" v-model="post.plate_number">
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.plate_number" :key="error"> Plate Number {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.plate_number" :key="error"> Plate Number {{ error }}</span>
             </div>
           </div>
           <div class="col-6 mb-3">
@@ -156,22 +149,22 @@
             <label for="">Description</label>
             <textarea name="" id="" rows="4" class="form-control" v-model="post.description"></textarea>
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.description" :key="error"> Description {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.description" :key="error"> Description {{ error }}</span>
             </div>
           </div>
           <div class="col-12 mb-3">
             <label for="">Phone</label>
             <input type="text" class="form-control col-6" placeholder="09777999888" v-model="post.phone">
             <div v-if="errorMessage">
-              <span class="text-danger" v-if="post_errors.phone.length > 1" v-show="post_errors.phone.length > 1"> Phone Number {{ post_errors.phone[0] }}</span>
-              <span class="text-danger" v-for="error in post_errors.phone" :key="error" v-else> Phone Number {{ error }}</span>
+              <span class="text-danger" v-if="errors.phone && errors.phone.length > 1"> Phone Number {{ errors.phone[0] }}</span>
+              <span class="text-danger" v-for="error in errors.phone" :key="error" v-else> Phone Number {{ error }}</span>
             </div>
           </div>
           <div class="col-12 mb-4">
             <label for="">Address</label>
             <textarea name="" id="" rows="4" class="form-control" v-model="post.address"></textarea>
             <div v-if="errorMessage">
-              <span class="text-danger" v-for="error in post_errors.address" :key="error"> Address {{ error }}</span>
+              <span class="text-danger" v-for="error in errors.address" :key="error"> Address {{ error }}</span>
             </div>
           </div>
         </div>
@@ -215,10 +208,12 @@ export default {
       manufacture: [],
       build_type: [],
       car_model: [],
-      post_errors: [],
-      image_errors: [],
+      years: [],
+      filter_model: [],
+      errors: [],
       errorMessage: false,
       imageUrl: null,
+      colors: []
     }
   },
   methods: {
@@ -238,9 +233,9 @@ export default {
         this.errorMessage = false
       })
       .catch(error => {
+        console.log(error.response.data)
         this.errorMessage = true
-        this.post_errors = error.response.data.post_errors
-        this.image_errors = error.response.data.image_errors
+        this.errors = error.response.data
         this.$notify({
           title: 'Fail',
           text: 'Something went wrong',
@@ -251,6 +246,12 @@ export default {
     imagePreview(e) {
       let file = e.target.files[0]
       this.imageUrl = URL.createObjectURL(file)
+    },
+    filterModel(){
+      this.post.car_model_id = null
+      this.filter_model = this.car_model.filter(e => {
+        return this.post.manufacture_id == e.manufacture_id
+      })
     }
   },
   mounted() {
@@ -259,6 +260,8 @@ export default {
       this.manufacture = response.data.manufacture
       this.build_type = response.data.build_type
       this.car_model = response.data.model
+      this.years = response.data.year
+      this.colors = response.data.color
     })
   }
 }

@@ -42,7 +42,8 @@
             </div>
             <hr>
             <div class="">
-              <img src="~/assets/default.png" alt="Profile" width="40px" height="40px" class="rounded-circle">
+              <b-img v-if="post.image" :src="imageUrl(post.image.src.url)" class="rounded-circle" style="width:40px;height:40px;"></b-img>
+              <b-img v-else src="~/assets/default.png" fluid alt="Responsive image" class="rounded-circle" style="width:40px;height:40px;"></b-img>
               <p class="d-inline ml-3">{{ post.user }}</p>
             </div>
             
@@ -79,7 +80,7 @@ export default {
       search: "",
       currentPage: 1,
       rows: null,
-      perPage: null,
+      perPage: null
     }
     
   },

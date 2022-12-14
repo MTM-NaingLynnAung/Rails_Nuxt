@@ -37,14 +37,38 @@ class UsersController < ApplicationController
   end
 
   def edit
-    render json: @user
+    render json: {user: @user, image: @user.image}
   end
 
   def update
+    if params[:image].present?
+      @image = @user.build_image(src: params[:image])
+    end
+    
     if @user.update(user_params)
+      if params[:image].present?
+        image = Image.where(imageable_id: @user.id, imageable_type: 'User')
+        image.each do |img|
+          img.destroy
+        end
+        @image = @user.create_image(src: params[:image])
+      end
       render json: @user, status: 200
     else
       render json: @user.errors, status: :unprocessable_entity
+    end
+  end
+
+  def change_password
+    if @user && @user.authenticate(params[:old_pass])
+      @user.update(user_params)
+      if @user.valid?(:uploaded)
+        render json: @user, status: 200
+      else
+        render json: @user.errors, status: :unprocessable_entity
+      end
+    else
+      render json: { error: 'Password Incorrect. Please try again' }, status: :unprocessable_entity
     end
   end
   

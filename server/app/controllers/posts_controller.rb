@@ -18,10 +18,8 @@ class PostsController < ApplicationController
   end
 
   def new
-    @manufacture = Manufacture.all
-    @build_type = BuildType.all
-    @model = CarModel.all
-    render json: { manufacture: @manufacture, build_type: @build_type, model: @model }
+    all_list(Manufacture, BuildType, CarModel, Constants::MANUFACTURE_YEAR, Constants::COLOR)
+    render json: { manufacture: @manufacture, build_type: @build_type, model: @model, year: @manufacture_year, color: @color }
   end
 
   def create
@@ -40,7 +38,7 @@ class PostsController < ApplicationController
     if @post.save && @image.save
       render json: @post, status: :created
     else
-      render json: {post_errors: @post.errors, image_errors: @image.errors}, status: :unprocessable_entity
+      render json: @post.errors, status: :unprocessable_entity
     end
   end
 
@@ -54,10 +52,8 @@ class PostsController < ApplicationController
   end
 
   def edit
-    @manufacture = Manufacture.all
-    @build_type = BuildType.all
-    @model = CarModel.all
-    render json: { post: @post, manufacture: @manufacture, build_type: @build_type, model: @model, image: @post.images }
+    all_list(Manufacture, BuildType, CarModel, Constants::MANUFACTURE_YEAR, Constants::COLOR)
+    render json: { post: @post, manufacture: @manufacture, build_type: @build_type, model: @model, image: @post.images, year: @manufacture_year, color: @color }
   end
 
   def update
@@ -76,7 +72,7 @@ class PostsController < ApplicationController
    
     if @post.update(post_params)
       if params[:images].present?
-        image = Image.where(imageable_id: @post.id)
+        image = Image.where(imageable_id: @post.id, imageable_type: 'Post')
         image.each do |img|
           img.destroy
         end
@@ -84,7 +80,7 @@ class PostsController < ApplicationController
       end
       render json: @post, status: 200
     else
-      render json: {post_errors: @post.errors, image_errors: @image.errors}, status: :unprocessable_entity
+      render json: @post.errors, status: :unprocessable_entity
     end
   end
 
@@ -132,7 +128,17 @@ class PostsController < ApplicationController
       phone: post.phone,
       address: post.address,
       created_at: post.created_at.strftime('%B %d, %Y'),
-      images: post.images
+      images: post.images,
+      image: post.user.image
     }
   end
+
+  def all_list(manufacture, build_type, model, year, color)
+    @manufacture = manufacture.all
+    @build_type = build_type.all
+    @model = model.all
+    @manufacture_year = year
+    @color = color
+  end
+
 end
