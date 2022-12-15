@@ -1,7 +1,7 @@
 <template>
   <div>
     <h3 class="my-3 text-center">Login</h3>
-    <form @submit.prevent="login" class="col-3 m-auto">
+    <form @submit.prevent="login" class="col-lg-3 col-12 m-auto">
       <div class="form-group">
         <label>Email address</label>
         <input type="email" class="form-control" v-model="user.email">

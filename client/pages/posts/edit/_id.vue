@@ -1,25 +1,25 @@
 <template>
   <div class="container mt-5">
-    <div class="col-8 m-auto border p-4">
+    <div class="col-lg-8 col-12 m-auto border p-4">
       <h3>Update Post</h3>
       <form @submit.prevent="update">
         <div class="row">
-          <div class="col-6 my-3" style="height:180px">
-            <div v-for="image in images" :key="image.id">
-              <b-img :src="url(image.src.url)" alt="..." class="card-img-top" style="width:100%;height:180px;" v-show="imageUrl == null"></b-img>
+          <div class="col-lg-6 col-12 my-3 max-height">
+            <div v-for="image in images" :key="image.id" class="max-height">
+              <b-img :src="url(image.src.url)" alt="..." class="w-100 h-100" fluid v-show="imageUrl == null"></b-img>
             </div>
               <b-img v-if="imageUrl" :src="imageUrl" fluid alt="Responsive image" class="w-100 h-100"></b-img>
             <div v-if="errorMessage">
               <span class="text-danger" v-for="error in errors['images.src']" :key="error"> {{ error }}</span>
             </div>
           </div>
-          <div class="col-6 mt-3">
+          <div class="col-lg-6 col-12 mt-3">
             <label for="">Add Image</label>
             <b-form-file v-model="post.images" class="mt-3 form-control" plain @change="imagePreview"></b-form-file>
           </div>
-          <div class="col-6 mt-3">
+          <div class="col-lg-6 col-12 mt-3">
             <label for="">Manufactures (Optional)</label>
-            <select class="form-control" v-model="post.manufacture_id" @change="filterModel">
+            <select class="form-control" v-model="post.manufacture_id">
               <option selected value="null">--Select--</option>
               <option :value="model.id" v-for="model in manufacture" :key="model.id">{{ model.name }}</option>
             </select>
@@ -31,18 +31,18 @@
               </select>
             </div>
           </div>
-          <div class="col-6 my-3">
+          <div class="col-lg-6 col-12 my-3">
             <label for="">Buid Type (Optional)</label>
             <select class="form-control" v-model="post.build_type_id">
               <option selected value="null">--Select--</option>
               <option :value="type.id" v-for="type in build_type" :key="type.id">{{ type.name }}</option>
             </select>
           </div>
-          <div class="col-6">
+          <div class="col-lg-6 col-12">
             <label for="">Trim Name (Optional)</label>
             <input type="text" class="form-control" v-model="post.trim_name" placeholder="Trim Name">
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Engine Power (Optional)</label>
             <input type="text" class="form-control" v-model="post.engine_power" placeholder="Engine Power">
           </div>
@@ -64,7 +64,7 @@
             <label for="">Mileage (Optional)</label>
             <input type="number" v-model="post.mileage" placeholder="0" class="form-control col-6">
           </div>
-          <div class="col-6">
+          <div class="col-lg-6 col-12">
             <label for="">Steering Position</label>
             <select class="form-control" v-model="post.steering_position">
               <option value="" selected>--Select--</option>
@@ -75,7 +75,7 @@
               <span class="text-danger" v-for="error in errors.steering_position" :key="error"> Steering Position {{ error }}</span>
             </div>
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Transmissions</label>
             <select class="form-control" v-model="post.transmission">
               <option selected value="">--Select--</option>
@@ -87,7 +87,7 @@
               <span class="text-danger" v-for="error in errors.transmission" :key="error"> Transmissions {{ error }}</span>
             </div>
           </div>
-          <div class="col-6">
+          <div class="col-lg-6 col-12">
             <label for="">Fuel Type (Optional)</label>
             <select class="form-control" v-model="post.fuel_type">
               <option selected value="">--Select--</option>
@@ -97,7 +97,7 @@
               <option>Electric</option>
             </select>
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Manufacturer Year</label>
             <select class="form-control" v-model="post.year">
               <option selected value="">--Select--</option>
@@ -107,15 +107,15 @@
               <span class="text-danger" v-for="error in errors.year" :key="error"> Manufacture Year {{ error }}</span>
             </div>
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Price</label>
             <input type="text" class="form-control" v-model="post.price" :disabled="post.negotiate == true" placeholder="0">
           </div>
-          <div class="col-6">
+          <div class="col-lg-6 col-12">
             <label for="" class="d-block">Negotiate</label>
             <input type="checkbox" value="true" v-model="post.negotiate">
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Color</label>
             <select class="form-control" v-model="post.color">
               <option value="" selected>--Select--</option>
@@ -125,22 +125,22 @@
               <span class="text-danger" v-for="error in errors.color" :key="error"> Color {{ error }}</span>
             </div>
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Vehicle Identification Number (Optional)</label>
             <input type="text" class="form-control" v-model="post.vin" placeholder="Vehicle Identification Number">
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Plate Number</label>
             <input type="text" placeholder="1Z/1111" class="form-control" v-model="post.plate_number">
             <div v-if="errorMessage">
               <span class="text-danger" v-for="error in errors.plate_number" :key="error"> Plate Number {{ error }}</span>
             </div>
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Numbers Of Seats(Optional)</label>
             <input type="number" class="form-control" placeholder="0" v-model="post.seat">
           </div>
-          <div class="col-6 mb-3">
+          <div class="col-lg-6 col-12 mb-3">
             <label for="">Numbers Of Doors(Optional)</label>
             <input type="number" class="form-control" placeholder="0" v-model="post.door">
           </div>
@@ -153,7 +153,7 @@
           </div>
           <div class="col-12 mb-3">
             <label for="">Phone</label>
-            <input type="text" class="form-control col-6" placeholder="09777999888" v-model="post.phone">
+            <input type="text" class="form-control col-lg-6 col-12" placeholder="09777999888" v-model="post.phone">
             <div v-if="errorMessage">
               <span class="text-danger" v-for="error in errors.phone" :key="error"> Phone {{ error }}</span>
             </div>
@@ -243,13 +243,14 @@ export default {
     },
     imagePreview(e) {
       let file = e.target.files[0]
-      this.imageUrl = URL.createObjectURL(file)
+      if (file.type == 'image/png' || file.type == 'image/jpeg'){
+        this.imageUrl = URL.createObjectURL(file)
+      }
     },
     url(image){
       return `http://127.0.0.1:8080${image}`
     },
     filterModel(){
-      this.post.car_model_id = null
       this.filter_model = this.car_model.filter(e => {
         return this.post.manufacture_id == e.manufacture_id
       })
@@ -263,9 +264,13 @@ export default {
       this.manufacture = response.data.manufacture
       this.build_type = response.data.build_type
       this.car_model = response.data.model
+      this.filter_model = this.car_model.filter(e => {
+        return this.post.manufacture_id == e.manufacture_id
+      })
       this.years = response.data.year
       this.colors = response.data.color
     })
+    
   }
 }
 </script>

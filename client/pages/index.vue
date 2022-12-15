@@ -6,7 +6,7 @@
     </div>
   </div>
   <div style="margin-top: -20px;">
-    <form class="col-4 d-flex justify-content-center m-auto" @submit.prevent="postLists(currentPage)">
+    <form class="col-lg-4 col-md-6 col-sm-12 d-flex justify-content-center m-auto" @submit.prevent="postLists(currentPage)">
       <input type="search" class="form-control mr-3" v-model="search" placeholder="Find with model" style="height:45px">
       <button class="btn btn-primary">Search</button>
     </form>
@@ -14,10 +14,10 @@
   <div class="container">
     <h3 class="text-center my-5">Latest Post</h3>
     <div class="row">
-      <div v-for="post in posts" :key="post.id" class="col-4 mb-4">
-        <div class="card" @click="detail(post.id)">
+      <div v-for="post in posts" :key="post.id" class="col-sm-12 col-md-6 col-lg-4 mb-4 d-flex align-items-stretch">
+        <div class="card w-100" @click="detail(post.id)">
           <div v-for="image in post.images" :key="image.id">
-            <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top" style="height: 200px;">
+            <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top height" style="height: 300px;">
           </div>
           <div class="card-body">
             <NuxtLink :to="`/posts/detail/${post.id}`" class="nuxt-link"><h5 class="card-title">{{ post.manufacture }} ( {{ post.car_model }} ) </h5></NuxtLink>
@@ -126,6 +126,11 @@ export default {
   }
   .page-item:nth-child(2) {
     display: none;
+  }
+  @media screen and (min-width: 768px) {
+    .height{
+      height: 200px!important;
+    }
   }
 
 </style>

@@ -9,12 +9,12 @@
       </button>
     </div>
     <div class="row mt-5">
-      <div class="col-8">
+      <div class="col-lg-8 col-12 mb-3">
         <div v-for="image in post.images" :key="image.id">
-          <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top" style="width:500px;height:350px">
+          <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top image-size">
         </div>
       </div>
-      <div class="col-4 border p-3">
+      <div class="col-lg-4 col-12 border p-3">
         <div class="d-flex justify-content-between">
           <h5 class="mt-2">{{ post.manufacture }} ( {{ post.car_model }} )</h5>
           <p class="text-success bg-light p-2 rounded-pill">{{ post.condition }}</p>
@@ -143,10 +143,10 @@
     <div>
       <h3 class="text-center mb-5" v-if="posts.length">Related Post</h3>
       <div class="row">
-        <div v-for="post in posts" :key="post.id" class="col-4 mb-4">
+        <div v-for="post in posts" :key="post.id" class="col-sm-12 col-md-6 col-lg-4  mb-4">
           <div class="card" @click="detail(post.id)">
             <div v-for="image in post.images" :key="image.id">
-              <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top" style="height:200px;">
+              <img :src="imageUrl(image.src.url)" alt="..." class="card-img-top height">
             </div>
             <div class="card-body">
               <NuxtLink :to="`/posts/detail/${post.id}`" class="nuxt-link"><h5 class="card-title">{{ post.manufacture }} ( {{ post.car_model }} ) </h5></NuxtLink>
@@ -260,6 +260,12 @@ export default {
     border-radius: 50%;
     padding: 7px 12px;
     background: rgb(254 242 242);
+  }
+  @media screen and (min-width: 991px) {
+    .image-size {
+      width: 500px;
+      height: 300px;
+    }
   }
 
 </style>

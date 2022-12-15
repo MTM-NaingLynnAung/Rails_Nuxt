@@ -12,6 +12,8 @@ class UsersController < ApplicationController
 
   def create
     @user = User.create(user_params)
+    @user.phone = ''
+    @user.address = ''
     if @user.save
       token = encode_token({ user_id: @user.id })
       render json: { user: @user, token: token }, status: :created
@@ -21,7 +23,6 @@ class UsersController < ApplicationController
   end
   
   def login
-    
     @user = User.find_by(email: params[:email])
     if @user && @user.authenticate(params[:password])
       token = encode_token({user_id: @user.id})
@@ -33,7 +34,7 @@ class UsersController < ApplicationController
   end
 
   def auto_login
-    render json: @user
+    render json: { user: @user, image: @user.image }
   end
 
   def edit
@@ -43,18 +44,19 @@ class UsersController < ApplicationController
   def update
     if params[:image].present?
       @image = @user.build_image(src: params[:image])
-    end
-    
-    if @user.update(user_params)
-      if params[:image].present?
-        image = Image.where(imageable_id: @user.id, imageable_type: 'User')
-        image.each do |img|
-          img.destroy
+      if !@image.save
+        old_image = Image.where(imageable: nil)
+        old_image.each do |image|
+          image.imageable_id = @user.id
+          image.imageable_type = 'User'
+          image.save
         end
-        @image = @user.create_image(src: params[:image])
       end
+    end
+    if @user.update(user_params)
       render json: @user, status: 200
     else
+      @user.reload_image
       render json: @user.errors, status: :unprocessable_entity
     end
   end

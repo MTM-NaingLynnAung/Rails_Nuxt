@@ -1,6 +1,6 @@
 <template>
   <div class="mt-5 container">
-    <div class="col-8 m-auto border">
+    <div class="col-lg-8 col-10 m-auto border">
       <div class="p-4">
         <div class="d-inline">
           <b-img v-if="imageUrl" :src="imageUrl" fluid alt="Responsive image" class="rounded-circle" style="width: 100px; height: 100px;"></b-img>
@@ -8,7 +8,7 @@
           <b-img v-else src="~/assets/default.png" fluid alt="Responsive image" class="rounded-circle" style="width: 100px; height: 100px;"></b-img>
         </div>
         <button class="btn btn-info ml-4 rounded-pill">
-          <label for="image" class="mb-0 pointer">Edit Image</label>
+          <label for="image" class="mb-0 pointer">{{ image ? 'Edit Image' : 'Add Image' }}</label>
         </button>
         <b-form-file v-model="user.image" class="hidden" plain @change="uploadImage" id="image"></b-form-file>
         <div v-if="errorMessage">
@@ -17,18 +17,18 @@
         <form @submit.prevent="profileChange" class="mt-3">
           <div>
             <label for="">Name</label>
-            <input type="text" class="form-control col-6" v-model="user.name">
+            <input type="text" class="form-control col-lg-6 col-12" v-model="user.name">
             <div v-if="errorMessage">
               <span class="text-danger" v-for="error in errors.name" :key="error"> Name {{ error }}</span>
             </div>
           </div>
           <div class="my-3">
             <label for="">Email</label>
-            <input type="text" class="form-control col-6" disabled v-model="user.email">
+            <input type="text" class="form-control col-lg-6 col-12" disabled v-model="user.email">
           </div>
           <div>
             <label for="">Phone</label>
-            <input type="text" class="form-control col-6" v-model="user.phone">
+            <input type="text" class="form-control col-lg-6 col-12" v-model="user.phone" placeholder="09777888999 (or) 959777888999">
             <div v-if="errorMessage">
               <span class="text-danger" v-for="error in errors.phone" :key="error"> Phone {{ error }}</span>
             </div>
@@ -144,7 +144,9 @@ export default {
     },
     uploadImage(e){
       let file = e.target.files[0]
-      this.imageUrl = URL.createObjectURL(file)
+      if (file.type == 'image/png' || file.type == 'image/jpeg'){
+        this.imageUrl = URL.createObjectURL(file)
+      }
     },
     url(image){
       return `http://127.0.0.1:8080${image}`

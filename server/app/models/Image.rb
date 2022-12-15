@@ -1,6 +1,6 @@
 class Image < ApplicationRecord
   mount_uploader :src, ImageUploader
-  belongs_to :imageable, polymorphic: true
+  belongs_to :imageable, polymorphic: true, autosave: true, optional: true
   validates :src, presence: { message: "Image can't be blank" }
   validate :image_size
 
